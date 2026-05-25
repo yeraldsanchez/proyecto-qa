@@ -1,0 +1,8 @@
+services:
+  answer:
+    image: apache/answer:latest
+    container_name: apache-answer
+    ports:
+      - "9080:80"
+    # Sin volúmenes → cada vez que recreas el contenedor empieza desde cero
+    restart: unless-stopped

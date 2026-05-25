@@ -1,0 +1,19 @@
+{
+  "name": "pruebas-proyecto",
+  "version": "1.0.0",
+  "description": "Proyecto de pruebas QA: E2E, API y Rendimiento",
+  "scripts": {
+    "test:e2e": "playwright test tests/e2e",
+    "test:e2e:headed": "playwright test tests/e2e --headed",
+    "test:api": "playwright test tests/api",
+    "test:performance": "k6 run tests/performance/HU01.k6.ts",
+    "test:all-playwright": "playwright test",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "@types/k6": "^0.57.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}
