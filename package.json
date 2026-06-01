@@ -9,8 +9,11 @@
     "test:performance": "node scripts/run-performance.js",
     "test:performance:HU01": "k6 run tests/performance/HU01.k6.ts",
     "test:performance:HU02": "k6 run tests/performance/HU02.k6.ts",
+    "test:performance:HU03": "k6 run tests/performance/HU03.k6.ts",
+    "test:performance:HU04": "k6 run tests/performance/HU04.k6.ts",
     "test:all-playwright": "playwright test",
-    "test:report": "playwright show-report"
+    "test:report": "playwright show-report",
+    "setup": "playwright test --grep \"a^\" --reporter=list"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",

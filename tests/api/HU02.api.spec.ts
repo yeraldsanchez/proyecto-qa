@@ -1,18 +1,17 @@
 import { test, expect } from '@playwright/test';
+
+const ADMIN_EMAIL    = process.env.ADMIN_EMAIL    ?? 'admin@sistema.com';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? '12345678';
+
 test.describe('Inicio de sesión', () => {
+
     test('Login vía API con credenciales válidas', async ({ request }) => {
         const response = await request.post('/answer/api/v1/user/login/email', {
-            data: {
-                e_mail: 'admin@sistema.com',
-                pass: '12345678',
-            },
+            data: { e_mail: ADMIN_EMAIL, pass: ADMIN_PASSWORD },
         });
-        // Verificar código HTTP
         expect(response.status()).toBe(200);
 
-        // Verificar que el body contiene el token de acceso
         const body = await response.json();
-        // Asegurarnos de que la estructura esperada exista y que access_token sea una cadena no vacía
         expect(body).toBeTruthy();
         expect(body.data).toBeTruthy();
         expect(body.data?.access_token).toBeTruthy();
@@ -20,15 +19,12 @@ test.describe('Inicio de sesión', () => {
     });
 
     test('Login vía API con correo no registrado', async ({ request }) => {
+        // Email con UUID para garantizar que nunca existe en el sistema
+        const uuid = crypto.randomUUID().replace(/-/g, '').slice(0, 8);
         const response = await request.post('/answer/api/v1/user/login/email', {
-            data: {
-                e_mail: 'test@gmail.com',
-                pass: 'Segura123',
-            },
+            data: { e_mail: `noexiste_${uuid}@never.invalid`, pass: 'Segura123' },
         });
-
         expect(response.status()).toBe(401);
     });
-
 
 });

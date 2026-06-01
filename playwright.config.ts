@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+  globalSetup: require.resolve('./tests/global-setup'),
+
   // Directorio raíz de los tests
   testDir: './tests',
 
@@ -38,9 +40,9 @@ export default defineConfig({
     // launchOptions.slowMo: 500 → agrega 500ms entre cada acción (más fácil de seguir)
     // Descomenta estas líneas si quieres ver el navegador por defecto,
     // o usa los scripts "test:e2e:headed" / "test:api:headed" del package.json
-    headless: false,
+    headless: true,
     launchOptions: {
-      slowMo: 500,
+      slowMo: 300,
     },
   },
 
