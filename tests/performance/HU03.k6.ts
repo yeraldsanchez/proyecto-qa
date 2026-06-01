@@ -20,32 +20,26 @@ export const options: Options = {
 export function setup() {
   const runId = `${Date.now()}`;
 
-  // Login como admin para obtener token con privilegios
   const adminLogin = http.post(
     `${BASE_URL}/answer/api/v1/user/login/email`,
     JSON.stringify({ e_mail: ADMIN_EMAIL, pass: ADMIN_PASSWORD }),
     { headers: { 'Content-Type': 'application/json' } }
   );
   const adminToken = JSON.parse(adminLogin.body as string)?.data?.access_token;
-  const adminHeaders = {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${adminToken}`,
-  };
+  const adminHeaders = { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` };
 
   const tokens: string[] = [];
 
   for (let i = 1; i <= 50; i++) {
     const email = `perf_hu03_${i}@test.com`;
-    const displayName = `PerfHU03-${i}`;
 
-    // Crear usuario vía admin API (ya queda verificado, sin necesitar email)
+    // La admin API crea el usuario ya verificado, sin necesitar confirmación por correo
     http.post(
       `${BASE_URL}/answer/admin/api/user`,
-      JSON.stringify({ display_name: displayName, email, password: 'Segura123' }),
+      JSON.stringify({ display_name: `PerfHU03-${i}`, email, password: 'Segura123' }),
       { headers: adminHeaders }
     );
 
-    // Login con el usuario recién creado
     const loginRes = http.post(
       `${BASE_URL}/answer/api/v1/user/login/email`,
       JSON.stringify({ e_mail: email, pass: 'Segura123' }),
@@ -58,23 +52,18 @@ export function setup() {
     }
   }
 
-  // Si ningún usuario nuevo funcionó, usar el admin como fallback
   if (tokens.length === 0) tokens.push(adminToken);
 
   return { tokens, runId };
 }
 
 export default function (data: { tokens: string[]; runId: string }) {
-  const token = data.tokens[Math.floor(Math.random() * data.tokens.length)];
-  const url   = `${BASE_URL}/answer/api/v1/question`;
+  const token   = data.tokens[Math.floor(Math.random() * data.tokens.length)];
+  const url     = `${BASE_URL}/answer/api/v1/question`;
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
-
-  // 0 → contenido válido → espera 200
-  // 1 → contenido inválido (< 6 chars) → espera 400
-  const caso = Math.floor(Math.random() * 2);
+  const caso    = Math.floor(Math.random() * 2);
 
   if (caso === 0) {
-    // ── Escenario PREGUNTA VÁLIDA → esperamos 200 ─────────────────────────────
     const response = http.post(
       url,
       JSON.stringify({
@@ -90,7 +79,6 @@ export default function (data: { tokens: string[]; runId: string }) {
     }, { scenario: 'pregunta_valida' });
 
   } else {
-    // ── Escenario CONTENIDO INVÁLIDO → esperamos 400 ──────────────────────────
     const response = http.post(
       url,
       JSON.stringify({

@@ -23,21 +23,20 @@ export const options: Options = {
 export function setup() {
   const runId = `${Date.now()}`;
 
-  // Login como admin
   const adminLogin = http.post(
     `${BASE_URL}/answer/api/v1/user/login/email`,
     JSON.stringify({ e_mail: ADMIN_EMAIL, pass: ADMIN_PASSWORD }),
     { headers: JSON_HDR }
   );
-  const adminToken = JSON.parse(adminLogin.body as string)?.data?.access_token;
+  const adminToken  = JSON.parse(adminLogin.body as string)?.data?.access_token;
   const adminHeaders = { ...JSON_HDR, Authorization: `Bearer ${adminToken}` };
 
-  // ── Crear 100 usuarios ──────────────────────────────────────────────────────
   const tokens: string[] = [];
 
   for (let i = 1; i <= 100; i++) {
     const email = `perf_hu04_${i}@test.com`;
 
+    // La admin API crea el usuario ya verificado, sin necesitar confirmación por correo
     http.post(
       `${ADMIN_URL}/user`,
       JSON.stringify({ display_name: `PerfHU04-${i}`, email, password: PASSWORD }),
@@ -56,7 +55,6 @@ export function setup() {
     }
   }
 
-  // ── Crear 100 preguntas con admin ──────────────────────────────────────────
   const questionIds: string[] = [];
 
   for (let i = 1; i <= 100; i++) {
@@ -84,13 +82,9 @@ export default function (data: { tokens: string[]; questionIds: string[]; runId:
   const questionId = data.questionIds[Math.floor(Math.random() * data.questionIds.length)];
   const url        = `${BASE_URL}/answer/api/v1/answer`;
   const headers    = { ...JSON_HDR, Authorization: `Bearer ${token}` };
-
-  // 0 → contenido válido (>= 6 chars) → espera 200
-  // 1 → contenido inválido (< 6 chars) → espera 400
-  const caso = Math.floor(Math.random() * 2);
+  const caso       = Math.floor(Math.random() * 2);
 
   if (caso === 0) {
-    // ── Escenario RESPUESTA VÁLIDA → esperamos 200 ────────────────────────────
     const response = http.post(
       url,
       JSON.stringify({
@@ -105,7 +99,6 @@ export default function (data: { tokens: string[]; questionIds: string[]; runId:
     }, { scenario: 'respuesta_valida' });
 
   } else {
-    // ── Escenario CONTENIDO INVÁLIDO → esperamos 400 ──────────────────────────
     const response = http.post(
       url,
       JSON.stringify({ question_id: questionId, content: 'Hola' }),

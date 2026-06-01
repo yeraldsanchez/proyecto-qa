@@ -29,6 +29,7 @@ export function setup() {
       { headers: { 'Content-Type': 'application/json' } }
     );
 
+    // 400 significa que ya existe — igual se agrega al pool para el login
     if (res.status === 200 || res.status === 400) {
       users.push({ email, pass: PASS_VALIDA });
     }
@@ -39,14 +40,9 @@ export function setup() {
 
 export default function (data: { users: { email: string; pass: string }[] }) {
   const url = `${BASE_URL}/answer/api/v1/user/login/email`;
-
-  // 0 → login válido → espera 200
-  // 1 → email que no existe → espera 400
-  // 2 → contraseña incorrecta → espera 400
   const caso = Math.floor(Math.random() * 3);
 
   if (caso === 0) {
-    // ── Escenario LOGIN VÁLIDO → esperamos 200 ────────────────────────────────
     const user = data.users[Math.floor(Math.random() * data.users.length)];
 
     const response = http.post(url, JSON.stringify({ e_mail: user.email, pass: user.pass }), {
@@ -59,7 +55,6 @@ export default function (data: { users: { email: string; pass: string }[] }) {
     }, { scenario: 'login_valido' });
 
   } else {
-    // ── Escenario LOGIN INVÁLIDO → esperamos 400 ──────────────────────────────
     const payload = caso === 1
       ? JSON.stringify({ e_mail: 'noexiste@fake.com', pass: PASS_VALIDA })
       : JSON.stringify({

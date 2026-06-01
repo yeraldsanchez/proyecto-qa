@@ -7,7 +7,6 @@ test.describe('Registro de nuevo usuario', () => {
     test.beforeAll(async ({ request }) => {
         const uuid = crypto.randomUUID().replace(/-/g, '').slice(0, 8);
         registeredEmail = `hu01_${uuid}@test.com`;
-        // Registrar el correo via API para que exista antes del test de duplicado
         await request.post('/answer/api/v1/user/register/email', {
             data: { e_mail: registeredEmail, name: `hu01_${uuid}`, pass: 'Segura123' },
         });

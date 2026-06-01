@@ -10,14 +10,13 @@ test.describe('Publicación de respuestas', () => {
     let questionId: string;
 
     test.beforeAll(async ({ request }) => {
-        // Login como admin
         const adminLogin = await request.post('/answer/api/v1/user/login/email', {
             data: { e_mail: ADMIN_EMAIL, pass: ADMIN_PASSWORD },
         });
         const adminToken = (await adminLogin.json()).data.access_token;
         const adminHeaders = { Authorization: `Bearer ${adminToken}` };
 
-        // Crear usuario de prueba verificado vía admin
+        // La admin API crea el usuario ya verificado, sin necesitar confirmación por correo
         const uuid = crypto.randomUUID().replace(/-/g, '').slice(0, 12);
         const email = `hu04_api_${uuid}@test.com`;
         await request.post('/answer/admin/api/user', {
@@ -29,7 +28,6 @@ test.describe('Publicación de respuestas', () => {
         });
         access_token = (await loginRes.json()).data.access_token;
 
-        // Crear pregunta como admin
         const qRes = await request.post('/answer/api/v1/question', {
             headers: adminHeaders,
             data: {
@@ -40,7 +38,6 @@ test.describe('Publicación de respuestas', () => {
         });
         questionId = (await qRes.json()).data.id;
 
-        // Cerrar la pregunta vía API
         await request.put('/answer/admin/api/question/status', {
             headers: adminHeaders,
             data: { question_id: questionId, status: 'closed' },

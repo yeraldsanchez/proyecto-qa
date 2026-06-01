@@ -32,18 +32,17 @@ test.describe('Publicación de respuestas', () => {
         const uuid = crypto.randomUUID().replace(/-/g, '').slice(0, 12);
         userEmail = `hu04_${uuid}@test.com`;
 
-        // Login como admin para crear usuario verificado
         const adminLogin = await request.post('/answer/api/v1/user/login/email', {
             data: { e_mail: ADMIN_EMAIL, pass: ADMIN_PASSWORD },
         });
         const adminToken = (await adminLogin.json()).data.access_token;
 
+        // La admin API crea el usuario ya verificado, sin necesitar confirmación por correo
         await request.post('/answer/admin/api/user', {
             headers: { Authorization: `Bearer ${adminToken}` },
             data: { display_name: `HU04_${uuid}`, email: userEmail, password: PASSWORD },
         });
 
-        // Login en el navegador con el usuario recién creado
         await page.goto('/users/login');
         await page.getByRole('textbox', { name: 'Correo electrónico' }).fill(userEmail);
         await page.getByRole('textbox', { name: 'Contraseña' }).fill(PASSWORD);

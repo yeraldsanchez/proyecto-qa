@@ -2,9 +2,7 @@ import http from 'k6/http';
 import { sleep, check } from 'k6';
 import { Options } from 'k6/options';
 
-const BASE_URL = __ENV.BASE_URL ?? 'http://localhost:9080';
-
-// Probabilidad de que un VU use un correo duplicado (0.0 – 1.0)
+const BASE_URL      = __ENV.BASE_URL ?? 'http://localhost:9080';
 const DUPLICATE_RATE = 0.2;
 
 export const options: Options = {
@@ -23,7 +21,6 @@ export function setup(): { runId: string; existingEmails: string[] } {
   const url = `${BASE_URL}/answer/api/v1/user/register/email`;
   const existingEmails: string[] = [];
 
-  // Registrar correos que se usarán como duplicados en la prueba
   for (let i = 1; i <= 3; i++) {
     const email = `perf_dup_${runId}_${i}@test.com`;
     const res = http.post(
@@ -44,7 +41,6 @@ export default function (data: { runId: string; existingEmails: string[] }) {
   const isDuplicate = Math.random() < DUPLICATE_RATE;
 
   if (isDuplicate) {
-    // ── Escenario DUPLICADO: correo ya existente → esperamos 400 ──────────────
     const email = data.existingEmails[Math.floor(Math.random() * data.existingEmails.length)];
 
     const response = http.post(
@@ -58,7 +54,6 @@ export default function (data: { runId: string; existingEmails: string[] }) {
     }, { scenario: 'duplicado' });
 
   } else {
-    // ── Escenario NUEVO: correo único garantizado → esperamos 200 ─────────────
     const email = `perf_${data.runId}_vu${__VU}_i${__ITER}@test.com`;
 
     const response = http.post(
