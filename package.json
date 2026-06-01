@@ -13,7 +13,7 @@
     "test:performance:HU04": "k6 run tests/performance/HU04.k6.ts",
     "test:all-playwright": "playwright test",
     "test:report": "playwright show-report",
-    "setup": "playwright test --grep \"a^\" --reporter=list"
+    "setup": "playwright test --config=setup.config.ts --grep \"a^\" --reporter=list"
   },
   "devDependencies": {
     "@playwright/test": "^1.52.0",

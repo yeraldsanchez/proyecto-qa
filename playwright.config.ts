@@ -1,7 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  globalSetup: require.resolve('./tests/global-setup'),
   testDir: './tests',
   fullyParallel: true,
   // forbidOnly evita que un test.only accidental bloquee el CI

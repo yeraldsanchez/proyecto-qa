@@ -14,7 +14,7 @@ test.describe('Publicación de una nueva pregunta', () => {
         access_token = (await response.json()).data.access_token;
     });
 
-    test.only('Publicar pregunta vía API con contenido menor a 6 caracteres', async ({ request }) => {
+    test('Publicar pregunta vía API con contenido menor a 6 caracteres', async ({ request }) => {
         const response = await request.post('/answer/api/v1/question', {
             headers: { Authorization: `Bearer ${access_token}` },
             data: {
