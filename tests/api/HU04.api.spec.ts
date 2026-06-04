@@ -33,7 +33,7 @@ test.describe('Publicación de respuestas', () => {
             data: {
                 title: `Pregunta N${uuid} cerrada para prueba HU04 api`,
                 content: 'Contenido suficiente para la prueba de respuesta en pregunta cerrada',
-                tags: [{ display_name: 'Docker', original_text: 'Docker', slug_name: '' }],
+                tags: [{ display_name: 'Docker', original_text: 'Docker', slug_name: 'docker' }],
             },
         });
         questionId = (await qRes.json()).data.id;

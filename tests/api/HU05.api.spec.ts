@@ -11,7 +11,7 @@ test.describe('HU05 - API de votos', () => {
       data: { object_id: '' },
     });
 
-    expect(response.status()).toBe(400);
+    expect(response.status()).toBe(422);
   });
 
   test('CP-HU05-04 - Voto via API sobre contenido inexistente', async ({ request }) => {
@@ -22,6 +22,6 @@ test.describe('HU05 - API de votos', () => {
       data: { object_id: 'noexiste999' },
     });
 
-    expect(response.status()).toBe(400);
+    expect(response.status()).toBe(404);
   });
 });

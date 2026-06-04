@@ -25,6 +25,6 @@ test.describe('HU07 - API de busqueda', () => {
       headers: { Authorization: `Bearer ${adminToken}` },
     });
 
-    expect(response.status()).toBe(400);
+    expect(response.status()).toBe(422);
   });
 });

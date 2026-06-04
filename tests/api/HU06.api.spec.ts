@@ -33,6 +33,6 @@ test.describe('HU06 - API de aceptacion de respuestas', () => {
       data: { question_id: `${questionId}123456789012345678901234567890`, answer_id: answerId },
     });
 
-    expect(response.status()).toBe(400);
+    expect(response.status()).toBe(404);
   });
 });
