@@ -14,6 +14,12 @@
     "test:performance:HU05": "k6 run tests/performance/HU05.k6.ts",
     "test:performance:HU06": "k6 run tests/performance/HU06.k6.ts",
     "test:performance:HU07": "k6 run tests/performance/HU07.k6.ts",
+    "test:performance:HU08": "k6 run tests/performance/HU08.k6.ts",
+    "test:performance:HU09": "k6 run tests/performance/HU09.k6.ts",
+    "test:performance:HU10": "k6 run tests/performance/HU10.k6.ts",
+    "test:performance:HU11": "k6 run tests/performance/HU11.k6.ts",
+    "test:performance:HU12": "k6 run tests/performance/HU12.k6.ts",
+    "test:performance:HU13": "k6 run tests/performance/HU13.k6.ts",
     "test:all-playwright": "playwright test",
     "test:report": "playwright show-report",
     "setup": "playwright test --config=setup.config.ts --grep \"a^\" --reporter=list"
