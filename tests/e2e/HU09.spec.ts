@@ -3,6 +3,21 @@ import { test, expect, Page } from '@playwright/test';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'admin@sistema.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? '12345678';
 
+async function closeModalIfVisible(page: Page) {
+    const dialog = page.getByRole('dialog');
+    if (await dialog.isVisible().catch(() => false)) {
+        const closeBtn = dialog.getByRole('button', {
+            name: /cerrar|close|ok|está bien|aceptar|continuar|entendido/i,
+        });
+        if (await closeBtn.isVisible().catch(() => false)) {
+            await closeBtn.click();
+        } else {
+            await page.keyboard.press('Escape');
+        }
+        await page.waitForTimeout(500);
+    }
+}
+
 async function loginIfNeeded(page: Page) {
     await page.goto('/users/login');
 
@@ -12,13 +27,11 @@ async function loginIfNeeded(page: Page) {
         await emailInput.fill(ADMIN_EMAIL);
         await page.getByRole('textbox', { name: 'Contraseña' }).fill(ADMIN_PASSWORD);
         await page.getByRole('button', { name: 'Acceder' }).click();
-        await page.waitForLoadState('networkidle');
+        await page.waitForURL(url => !url.toString().includes('/users/login'), { timeout: 15000 });
+        await page.waitForLoadState('domcontentloaded');
     }
-}
 
-async function openKnownQuestion(page: Page) {
-    await page.goto('/questions/10010000000000002');
-    await page.waitForLoadState('networkidle');
+    await closeModalIfVisible(page);
 }
 
 function saveButton(page: Page) {
@@ -34,12 +47,35 @@ function savedButton(page: Page) {
 }
 
 test.describe('Guardado de publicaciones', () => {
+    test.describe.configure({ mode: 'serial' });
+
+    let questionId: string;
+
+    test.beforeAll(async ({ request }) => {
+        const login = await request.post('/answer/api/v1/user/login/email', {
+            data: { e_mail: ADMIN_EMAIL, pass: ADMIN_PASSWORD },
+        });
+        const token = (await login.json()).data.access_token;
+
+        const uuid = crypto.randomUUID().replace(/-/g, '').slice(0, 8);
+        const q = await request.post('/answer/api/v1/question', {
+            headers: { Authorization: `Bearer ${token}` },
+            data: {
+                title: `Pregunta HU09 E2E ${uuid}`,
+                content: 'Contenido suficiente para probar el guardado de publicaciones.',
+                tags: [{ display_name: 'Docker', original_text: 'Docker', slug_name: '' }],
+            },
+        });
+        questionId = (await q.json()).data.id;
+    });
+
     test.beforeEach(async ({ page }) => {
         await loginIfNeeded(page);
     });
 
     test('Guardar publicación existente con usuario autenticado', async ({ page }) => {
-        await openKnownQuestion(page);
+        await page.goto(`/questions/${questionId}`);
+        await page.waitForLoadState('networkidle');
 
         if (await savedButton(page).isVisible().catch(() => false)) {
             await savedButton(page).click();
@@ -52,7 +88,8 @@ test.describe('Guardado de publicaciones', () => {
     });
 
     test('Remover publicación previamente guardada', async ({ page }) => {
-        await openKnownQuestion(page);
+        await page.goto(`/questions/${questionId}`);
+        await page.waitForLoadState('networkidle');
 
         if (await saveButton(page).isVisible().catch(() => false)) {
             await saveButton(page).click();

@@ -16,7 +16,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     headless: true,
     launchOptions: {
-      slowMo: 300,
+      slowMo: 500,
     },
   },
 

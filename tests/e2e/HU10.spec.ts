@@ -2,12 +2,19 @@ import { test, expect, Page } from '@playwright/test';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'admin@sistema.com';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? '12345678';
+const ADMIN_NAME = process.env.ADMIN_NAME ?? 'admin';
 
 async function closeModalIfVisible(page: Page) {
-    const closeButton = page.getByRole('button', { name: /cerrar|close/i });
-
-    if (await closeButton.isVisible().catch(() => false)) {
-        await closeButton.click();
+    const dialog = page.getByRole('dialog');
+    if (await dialog.isVisible().catch(() => false)) {
+        const closeBtn = dialog.getByRole('button', {
+            name: /cerrar|close|ok|está bien|aceptar|continuar|entendido/i,
+        });
+        if (await closeBtn.isVisible().catch(() => false)) {
+            await closeBtn.click();
+        } else {
+            await page.keyboard.press('Escape');
+        }
         await page.waitForTimeout(500);
     }
 }
@@ -21,7 +28,8 @@ async function loginIfNeeded(page: Page) {
         await emailInput.fill(ADMIN_EMAIL);
         await page.getByRole('textbox', { name: 'Contraseña' }).fill(ADMIN_PASSWORD);
         await page.getByRole('button', { name: 'Acceder' }).click();
-        await page.waitForLoadState('networkidle');
+        await page.waitForURL(url => !url.toString().includes('/users/login'), { timeout: 15000 });
+        await page.waitForLoadState('domcontentloaded');
     }
 
     await closeModalIfVisible(page);
@@ -29,14 +37,33 @@ async function loginIfNeeded(page: Page) {
 
 async function openProfileSettings(page: Page) {
     await page.goto('/users/settings/profile');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     await closeModalIfVisible(page);
 }
 
 test.describe('Edición del perfil de usuario', () => {
+    test.describe.configure({ mode: 'serial' });
+
     test.beforeEach(async ({ page }) => {
         await loginIfNeeded(page);
         await openProfileSettings(page);
+    });
+
+    test.afterEach(async ({ request }) => {
+        const login = await request.post('/answer/api/v1/user/login/email', {
+            data: { e_mail: ADMIN_EMAIL, pass: ADMIN_PASSWORD },
+        });
+        const token = (await login.json()).data.access_token;
+        await request.put('/answer/api/v1/user/info', {
+            headers: { Authorization: `Bearer ${token}` },
+            data: {
+                display_name: ADMIN_NAME,
+                username: 'admin',
+                bio: '',
+                website: '',
+                location: '',
+            },
+        });
     });
 
     test('Editar perfil con datos válidos', async ({ page }) => {
