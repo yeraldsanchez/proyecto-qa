@@ -131,6 +131,9 @@ npm run test:performance:HU01   # Registro de usuario
 npm run test:performance:HU02   # Login de usuario
 npm run test:performance:HU03   # Publicar pregunta
 npm run test:performance:HU04   # Escenario adicional
+npm run test:performance:HU05   # Votación de contenido
+npm run test:performance:HU06   # Aceptación de respuestas
+npm run test:performance:HU07   # Búsqueda y filtrado
 ```
 
 ---
@@ -153,9 +156,10 @@ Abre el reporte en el navegador automáticamente.
 Pruebas-Proyecto/
 ├── tests/
 │   ├── global-setup.ts        # Setup automático del wizard de instalación
-│   ├── e2e/                   # Tests end-to-end (HU01–HU04)
-│   ├── api/                   # Tests de API REST (HU01–HU04)
-│   └── performance/           # Scripts k6 (HU01–HU04)
+│   ├── e2e/                   # Tests end-to-end (HU01–HU08)
+│   ├── api/                   # Tests de API REST (HU01–HU08)
+│   ├── performance/           # Scripts k6 (HU01–HU07)
+│   └── shared/                # Helpers de datos para Playwright
 ├── scripts/
 │   └── run-performance.js     # Runner que ejecuta todos los *.k6.ts en secuencia
 ├── playwright.config.ts       # Configuración de Playwright

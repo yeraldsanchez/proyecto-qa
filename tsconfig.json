@@ -9,6 +9,7 @@
     "types": ["node"]
   },
   "include": [
+    "tests/shared/**/*",
     "tests/e2e/**/*",
     "tests/api/**/*",
     "playwright.config.ts"
