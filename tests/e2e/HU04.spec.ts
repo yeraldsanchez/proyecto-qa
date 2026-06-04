@@ -22,7 +22,7 @@ test.describe('Publicación de respuestas', () => {
             data: {
                 title: `Pregunta N${uuid} para pruebas HU04 e2e`,
                 content: 'Contenido suficiente para la prueba de publicación de respuestas',
-                tags: [{ display_name: 'Docker', original_text: 'Docker', slug_name: '' }],
+                tags: [{ display_name: 'Docker', original_text: 'Docker', slug_name: 'docker' }],
             },
         });
         questionId = (await q.json()).data.id;

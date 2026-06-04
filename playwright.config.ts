@@ -6,7 +6,7 @@ export default defineConfig({
   // forbidOnly evita que un test.only accidental bloquee el CI
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: 1,
+  workers: 10,
   reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
   outputDir: 'test-results/',
 
